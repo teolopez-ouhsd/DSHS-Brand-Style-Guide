@@ -18,6 +18,7 @@ Brand style guide for Del Sol High School (Oxnard Union High School District): o
 - `zips/delsol-<mark>.zip`: every version of one mark in all three formats.
 - `del-sol-jaguars-logos.zip` (the 13 marks), `del-sol-jaguars-sport-logos.zip` (all sport logos), `del-sol-italic-font.zip`.
 - `logos/retired/`: watermarked preview of the retired Jaguar Profile (shown on the page only; its logo files were removed).
+- `videos/`: seven silent how-to clips (logos, sport logos, clear space, usage rules, color, typography, AI flyers), each as MP4 plus a WebM fallback and a poster image. They play when scrolled into view and pause when scrolled away.
 - `sheets/`: the original Brandiose reference sheets as PNG plus one PDF.
 
 ## Updating files

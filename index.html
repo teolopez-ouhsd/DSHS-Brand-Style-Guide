@@ -25,6 +25,8 @@
   --inv-bg:#F6F0DA; --inv-fg:#11110F; --stage:#F6F0DA; --stage-line:#2C2B27;
   --ok:#9AD6AE; --bad:#F09C8C; --warn:#FFB81C;
   --orange:#FF671F; --gold:#FFB81C;
+  --stripe:linear-gradient(90deg,#FF671F 33.33%,#FFB81C 33.33% 66.66%,#000 66.66%); --stripe-edge:#3a3a36;
+  --sec-top:clamp(48px,6vw,88px); --sec-bottom:clamp(72px,9vw,128px); --meta-gap:clamp(28px,3.5vw,48px); --lead-gap:clamp(20px,2vw,28px); --content-gap:clamp(36px,4.5vw,56px);
   --display:"Del Sol","Arial Narrow",sans-serif;
   --body:"Open Sans","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
@@ -33,14 +35,14 @@
 @media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
   --bg:#F3EFE2; --panel:#F8F5EB; --fg:#141412; --muted:#69665C; --dim:#9C998D; --line:#D6D0BE;
   --inv-bg:#141412; --inv-fg:#F6F0DA; --stage:#FFFFFF; --stage-line:#D6D0BE;
-  --ok:#0B6B3A; --bad:#A3241B; --warn:#8A4A00; color-scheme:light}}
+  --ok:#0B6B3A; --bad:#A3241B; --warn:#8A4A00; --stripe-edge:transparent; color-scheme:light}}
 :root[data-theme="light"]{
   --bg:#F3EFE2; --panel:#F8F5EB; --fg:#141412; --muted:#69665C; --dim:#9C998D; --line:#D6D0BE;
   --inv-bg:#141412; --inv-fg:#F6F0DA; --stage:#FFFFFF; --stage-line:#D6D0BE;
-  --ok:#0B6B3A; --bad:#A3241B; --warn:#8A4A00; color-scheme:light}
+  --ok:#0B6B3A; --bad:#A3241B; --warn:#8A4A00; --stripe-edge:transparent; color-scheme:light}
 
 *{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:64px}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
 body{margin:0;background:var(--bg);color:var(--fg);font:400 15px/1.65 var(--body);-webkit-font-smoothing:antialiased}
 a{color:inherit;text-underline-offset:3px;text-decoration-color:var(--dim)}
 a:hover{text-decoration-color:var(--fg)}
@@ -54,25 +56,56 @@ h1,h2,h3{margin:0;font-weight:400;text-wrap:balance}
 .dl-link{font-size:11.5px;color:var(--fg);text-decoration:none;border-bottom:1px solid var(--dim);padding-bottom:1px;cursor:pointer;background:none;border-top:0;border-left:0;border-right:0;font-family:var(--body)}
 .dl-link:hover{border-bottom-color:var(--fg)}
 
-/* Top bar */
+/* Top bar: matches the district guide. Line icon on top, big label at the bottom, solid fill when active,
+   and a three-color school stripe (orange, gold, black) that slides in on hover and on the active tab. */
 .top{border-bottom:1px solid var(--line)}
-.top .frame{display:grid;grid-template-columns:minmax(220px,1.1fr) repeat(4,minmax(0,.62fr)) minmax(0,1fr);min-height:96px}
+.top .frame{display:grid;grid-template-columns:minmax(200px,1fr) repeat(4,minmax(0,.85fr)) minmax(0,.9fr);min-height:150px}
 .brand{display:flex;align-items:center;gap:12px;padding:20px 0;text-decoration:none}
-.brand img{height:40px}
+.brand img{height:40px;width:auto}
 .brand span{font-family:var(--display);font-size:28px;line-height:1;text-transform:uppercase;letter-spacing:.01em}
 .brand sup{font-family:var(--body);font-size:10px;vertical-align:top;margin-left:2px}
-.tab{border-left:1px solid var(--line);display:flex;flex-direction:column;justify-content:space-between;padding:14px 16px 12px;text-decoration:none;color:var(--fg);font-size:13.5px;font-weight:500;transition:background .15s,color .15s}
-.tab .n{font-size:11px;color:var(--muted);transition:color .15s}
+.tab{position:relative;border-left:1px solid var(--line);display:flex;text-decoration:none;color:var(--fg);transition:background .15s,color .15s}
+.tab .ic{display:grid;place-items:center;flex:none;color:var(--muted);transition:color .15s}
+.tab .ic svg{width:100%;height:100%;stroke-width:1.25}
+.tab:hover .ic{color:var(--fg)}
+.tab .tx{display:flex;flex-direction:column;gap:4px;min-width:0}
+.tab .tl{font:400 clamp(20px,2.3vw,32px)/1 var(--display);text-transform:uppercase;letter-spacing:.01em}
+.tab .n{font-size:11.5px;color:var(--muted);transition:color .15s}
 .tab:hover{background:var(--panel)}
-.tab.on{background:var(--inv-bg);color:var(--inv-fg)}
-.tab.on .n{color:var(--inv-fg)}
-.tab-end{border-left:1px solid var(--line);display:flex;align-items:center;justify-content:center;padding:0 16px;text-align:center}
+.top .tab{flex-direction:column;justify-content:space-between;gap:14px;padding:18px 18px 14px}
+.top .tab::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--stripe);transform:scaleX(0);transform-origin:left;transition:transform .2s}
+.top .tab:hover::before,.top .tab.on::before{transform:scaleX(1)}
+.top .ic{width:20px;height:20px}
+.top .tab.on{background:var(--inv-bg);color:var(--inv-fg)}
+.top .tab.on .ic{color:var(--inv-fg);opacity:.6}
+.top .tab.on .n{color:var(--inv-fg)}
+.tab-end{border-left:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:0 16px;text-align:center}
 @media (max-width:900px){
   .top .frame{grid-template-columns:repeat(4,minmax(0,1fr));min-height:0}
   .brand{grid-column:1/-1;border-bottom:1px solid var(--line);padding:16px 0}
-  .tab{min-height:64px}.tab:first-of-type{border-left:0}
+  .tab{min-height:104px}.tab:nth-child(2){border-left:0}
+  .tab .n{display:none}
+  .top .tab{padding:12px 10px 10px}
   .tab-end{display:none}
 }
+@media (max-width:480px){.tab .tl{font-size:17px}.top .ic{width:18px;height:18px}}
+
+/* Sticky section nav: numbered cells, same as the district guide */
+.secnav{display:flex;overflow-x:auto;scrollbar-width:none;scroll-behavior:smooth}
+.secnav::-webkit-scrollbar{display:none}
+.secnav a,.secnav .theme{flex:1 0 auto;min-width:96px;border-left:1px solid var(--line);display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;gap:8px;padding:8px 14px 8px;text-decoration:none;color:var(--muted);font:500 12.5px/1.25 var(--body);white-space:nowrap;transition:background .15s,color .15s}
+.secnav a:first-child{border-left:0}
+.secnav .n{font-size:11px;color:var(--dim);transition:color .15s}
+.secnav a:hover,.secnav .theme:hover{background:var(--panel);color:var(--fg)}
+.secnav a{box-shadow:inset 0 -2px 0 transparent}
+.secnav a.on{color:var(--fg);box-shadow:inset 0 -2px 0 var(--fg)}
+.secnav a.on .n{color:var(--muted)}
+.secnav .theme{flex:0 0 auto;color:var(--fg);min-width:72px;background:none;border-top:0;border-right:0;border-bottom:0;cursor:pointer}
+
+/* Three-color school stripe (hero) */
+.accent-bar{display:flex;height:6px;width:150px;margin-bottom:22px}
+.accent-bar span{flex:1}
+.accent-bar span:last-child{box-shadow:inset 0 0 0 1px var(--stripe-edge)}
 
 /* Sticky tester bar */
 .bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--bg);border-bottom:1px solid var(--line)}
@@ -98,13 +131,6 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bor
 .dot[aria-pressed="true"]{outline:1.5px solid var(--fg);outline-offset:2px}
 .theme{background:none;border:0;padding:0;cursor:pointer;color:var(--fg);display:grid;place-items:center}
 .reset{background:none;border:0;padding:0;font:600 13.5px/1 var(--body);color:var(--fg);cursor:pointer;margin-left:8px}
-.secnav{display:flex;gap:2px 22px;overflow-x:auto;scrollbar-width:none;padding-block:10px;font-size:12px}
-.secnav::-webkit-scrollbar{display:none}
-.secnav a{flex:none;color:var(--muted);text-decoration:none}
-.secnav a:hover,.secnav a.on{color:var(--fg)}
-.secnav .count{flex:none;font-family:var(--display);font-size:18px;line-height:1;color:var(--fg);margin-right:6px}
-.barrow{display:flex;align-items:center;gap:16px}
-.barrow .secnav{flex:1;min-width:0}
 .type-tester{position:sticky;top:var(--barh,40px);z-index:20;background:var(--bg);border-top:1px solid var(--line)}
 .type-tester+.spec-row{border-top:0}
 @media (max-width:1000px){.tester{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
@@ -243,11 +269,18 @@ footer .frame{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap
 @media (prefers-reduced-motion:reduce){*{transition:none!important}html{scroll-behavior:auto}}
 
 /* Del Sol additions */
-/* Section breathing room: more negative space around each heading */
-.row-in{padding:clamp(36px,4.5vw,64px) clamp(16px,2vw,24px) clamp(56px,6vw,96px)}
-.row-in>.meta:first-child{margin-bottom:clamp(28px,3.2vw,48px)}
-.h-l{margin-bottom:clamp(4px,.6vw,10px)}
-.h-l+.lead,.h-l+.stack,.h-l+.two{margin-top:clamp(22px,2.4vw,34px)}
+/* How-to clips */
+.clip{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:clamp(16px,2.4vw,32px);align-items:center;margin:28px 0 0;border:1px solid var(--line);padding:14px;background:var(--panel)}
+.clip video{display:block;width:100%;aspect-ratio:16/9;background:#11110F;border-radius:2px}
+.clip figcaption{display:grid;gap:10px;padding-right:8px}
+.clip ol{margin:4px 0 0;padding-left:1.25em;display:grid;gap:6px;font-size:14px;color:var(--muted)}
+.clip ol li::marker{color:var(--orange);font-weight:600}
+@media (max-width:860px){.clip{grid-template-columns:1fr}.clip figcaption{padding:4px 2px 2px}}
+/* Section rhythm: same spacing tokens as the district guide */
+.row-in{padding:var(--sec-top) clamp(16px,2vw,24px) var(--sec-bottom)}
+.row-in>.meta:first-child{margin-bottom:var(--meta-gap)}
+.h-l+.lead,.h-l+.stack,.h-l+.two{margin-top:var(--lead-gap)}
+.lead+.clip,.lead+.grid,.lead+.two,.lead+.meta,.lead+.tbl,.lead+.stack{margin-top:var(--content-gap)!important}
 /* Hero title: always two lines, sized to the column width */
 .hero-copy{container-type:inline-size}
 .hero-title span{display:block;white-space:nowrap}
@@ -267,26 +300,20 @@ footer .frame{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap
 </style>
 </head>
 <body>
-<header class="top">
+<header class="top" id="topnav">
   <div class="frame box">
-    <a class="brand" href="#top" id="top"><img src="logos/svg/delsol-interlocking-ds-orange.svg" alt=""><span>Jaguars<sup>™</sup></span></a>
-    <a class="tab" href="#logo" data-sec="logo"><span>Logos</span><span class="n">113 logos</span></a>
-    <a class="tab" href="#color" data-sec="color"><span>Colors</span><span class="n">3</span></a>
-    <a class="tab" href="#type" data-sec="type"><span>Type</span><span class="n">Del Sol Italic</span></a>
-    <a class="tab" href="#usage" data-sec="usage"><span>Rules</span><span class="n">12</span></a>
-    <div class="tab-end lbl">Del Sol High School<br>Brand Style Guide · 2026</div>
+    <a class="brand" href="#top" id="top" aria-label="Del Sol High School Jaguars"><img src="logos/svg/delsol-interlocking-ds-orange.svg" alt=""><span>Jaguars<sup>™</sup></span></a>
+    <a class="tab" href="#logo" data-sec="logo"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"/><circle cx="12" cy="9" r="2.6"/><path d="M8.6 14l-1.6 7 5-2.6 5 2.6-1.6-7"/></svg></span><span class="tx"><span class="tl">Logos</span><span class="n">113 logos · SVG PNG PDF</span></span></a>
+    <a class="tab" href="#color" data-sec="color"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.8-.8 1.8-1.8 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-1 .8-1.8 1.8-1.8H16.5A4.5 4.5 0 0 0 21 10.5C21 6.4 17 3 12 3z"/><circle cx="7.5" cy="11" r="1.1"/><circle cx="9.5" cy="7" r="1.1"/><circle cx="14.5" cy="7" r="1.1"/><circle cx="17.3" cy="10.7" r="1.1"/></svg></span><span class="tx"><span class="tl">Colors</span><span class="n">HEX · RGB · CMYK · PMS</span></span></a>
+    <a class="tab" href="#type" data-sec="type"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4.5h16V7"/><path d="M12 4.5v15"/><path d="M8.5 19.5h7"/></svg></span><span class="tx"><span class="tl">Type</span><span class="n">Del Sol Italic + Open Sans</span></span></a>
+    <a class="tab" href="#usage" data-sec="usage"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4.5" width="14" height="16.5" rx="2"/><rect x="9" y="2.5" width="6" height="4" rx="1"/><path d="M9 13.5l2 2 4-4.5"/></svg></span><span class="tx"><span class="tl">Rules</span><span class="n">Do's &amp; don'ts</span></span></a>
+    <div class="tab-end lbl"><span>Del Sol High School<br>Brand Style Guide · 2026</span><a class="dl-link" href="https://teolopez-ouhsd.github.io/communications/brand-guidelines.html">← District brand guide</a></div>
   </div>
 </header>
 
 <div class="bar">
-  <div class="frame box">
-    <div class="barrow" style="padding-inline:clamp(16px,2vw,24px)">
-    <nav class="secnav" aria-label="Sections">
-      <span class="count">12</span>
-      <a href="#logo">Logo Library</a><a href="#sports">Sport Logos</a><a href="#clear-space">Clear Space</a><a href="#usage">Usage Rules</a><a href="#retired">Retired</a><a href="#color">Color</a><a href="#apparel">Uniforms</a><a href="#accessibility">Accessibility</a><a href="#type">Typography</a><a href="#name">Name</a><a href="#ai">AI &amp; Flyers</a><a href="#ask">Ask</a>
-    </nav>
-      <button class="theme" type="button" id="themeBtn" aria-label="Switch light or dark"><svg width="18" height="18" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 2a8 8 0 0 1 0 16z" fill="currentColor"/></svg></button>
-    </div>
+  <div class="frame box" style="padding-inline:0">
+    <nav class="secnav" id="secnav" aria-label="Sections"><a href="#logo"><span class="n">01</span><span>Logo Library</span></a><a href="#sports"><span class="n">02</span><span>Sport Logos</span></a><a href="#clear-space"><span class="n">03</span><span>Clear Space</span></a><a href="#usage"><span class="n">04</span><span>Usage Rules</span></a><a href="#retired"><span class="n">05</span><span>Retired</span></a><a href="#color"><span class="n">06</span><span>Color</span></a><a href="#apparel"><span class="n">07</span><span>Uniforms</span></a><a href="#accessibility"><span class="n">08</span><span>Accessibility</span></a><a href="#type"><span class="n">09</span><span>Typography</span></a><a href="#name"><span class="n">10</span><span>Name</span></a><a href="#ai"><span class="n">11</span><span>AI &amp; Flyers</span></a><a href="#ask"><span class="n">12</span><span>Ask</span></a><button class="theme" type="button" id="themeBtn" aria-label="Switch light or dark"><svg width="18" height="18" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 2a8 8 0 0 1 0 16z" fill="currentColor"/></svg><span class="n">Theme</span></button></nav>
   </div>
 </div>
 
@@ -296,6 +323,7 @@ footer .frame{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap
   <div class="meta"><span class="lbl"><b>Del Sol High School</b> · Oxnard, California</span><span class="r lbl"><span>Complete School Logos &amp; Uniform Graphics</span><span>Marks by Brandiose · v11/8/22</span><span>Oxnard Union High School District</span></span></div>
   <div class="hero-grid">
     <div class="hero-copy">
+      <div class="accent-bar" aria-hidden="true"><span style="background:#FF671F"></span><span style="background:#FFB81C"></span><span style="background:#000"></span></div>
       <h1 class="h-xl hero-title" style="margin-bottom:18px"><span>Jaguars Brand</span><span>Style Guide</span></h1>
       <p>How to use the Del Sol Jaguars logos, colors, and type consistently across print, web, apparel, uniforms, presentations, and AI-generated materials.</p>
       <p><b>Everyone creating Del Sol materials, including staff, coaches, clubs, ASB, and boosters, should check this page before designing anything new.</b></p>
@@ -309,6 +337,10 @@ footer .frame{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap
   <div class="meta"><span class="lbl"><b>01</b> Logo Library</span><span class="r lbl"><span>13 marks</span><span>Up to 5 color versions</span><span>SVG + PNG + PDF</span></span></div>
   <h2 class="h-l">Logo Library</h2>
   <p class="lead">Pick the mark that fits your space and the version that fits how it will be printed or displayed. Always use these files. <b>Never recreate, redraw, trace, or approximate any Del Sol mark.</b></p>
+  <figure class="clip">
+    <video poster="videos/howto-logos-poster.jpg" muted loop playsinline preload="none" controls aria-label="How-to video: Choose a logo version" aria-describedby="steps-logos"><source src="videos/howto-logos.mp4" type="video/mp4"><source src="videos/howto-logos.webm" type="video/webm"></video>
+    <figcaption><span class="lbl"><b>Watch</b> · 0:30 · no sound</span><h3 class="h-s">Choose a logo version</h3><ol id="steps-logos"><li>Start with the background you are designing on.</li><li>White or light background: use the full-color logo.</li><li>On Del Sol Orange: use the black &amp; white version.</li><li>On black: gold or orange lettering reads best.</li><li>One ink, vinyl, or embroidery: use a one-color file.</li><li>Then pick the file format: SVG for web and signs, PNG for slides and docs, PDF for print shops.</li></ol></figcaption>
+  </figure>
   <div class="meta" style="margin:28px 0 12px">
     <div class="vchips" role="group" aria-label="Color version">
       <button type="button" data-v="full-color" aria-pressed="true">Full color</button>
@@ -329,6 +361,10 @@ footer .frame{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap
   <div class="meta"><span class="lbl"><b>02</b> Sport Logos</span><span class="r lbl"><span>15 sports</span><span>4 lockups each</span><span>Full color only</span></span></div>
   <h2 class="h-l">Sport Logos</h2>
   <p class="lead">Every Del Sol team has four ready-made lockups pairing the roaring jaguar head with the sport name. Use these for team shirts, schedules, social posts, and banners instead of typing a sport name next to a logo. <b>They are supplied in full color only.</b></p>
+  <figure class="clip">
+    <video poster="videos/howto-sports-poster.jpg" muted loop playsinline preload="none" controls aria-label="How-to video: Use the sport logos" aria-describedby="steps-sports"><source src="videos/howto-sports.mp4" type="video/mp4"><source src="videos/howto-sports.webm" type="video/webm"></video>
+    <figcaption><span class="lbl"><b>Watch</b> · 0:26 · no sound</span><h3 class="h-s">Use the sport logos</h3><ol id="steps-sports"><li>Every team has four ready-made lockups.</li><li>Stacked versions fit square posts and shirt fronts.</li><li>Arched is the classic chest print.</li><li>Horizontal fits wide, short spaces like web headers.</li><li>Don't type a sport name next to a logo. Use the lockup.</li></ol></figcaption>
+  </figure>
   <div class="meta" style="margin:28px 0 12px">
     <div class="sport-chips" role="group" aria-label="Sport" id="sportchips"></div>
     <a class="btn" href="del-sol-jaguars-sport-logos.zip" download>Download all sport logos ↓</a>
@@ -342,6 +378,10 @@ footer .frame{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap
   <div class="meta"><span class="lbl"><b>03</b> Clear Space &amp; Size</span><span class="r lbl"><span>x = height of the DEL SOL letters</span></span></div>
   <h2 class="h-l">Clear Space</h2>
   <p class="lead">Keep the area around the logo free of text, photos, other logos, and the edge of the page so it can breathe and stay legible.</p>
+  <figure class="clip">
+    <video poster="videos/howto-clearspace-poster.jpg" muted loop playsinline preload="none" controls aria-label="How-to video: Give the logo room" aria-describedby="steps-clearspace"><source src="videos/howto-clearspace.mp4" type="video/mp4"><source src="videos/howto-clearspace.webm" type="video/webm"></video>
+    <figcaption><span class="lbl"><b>Watch</b> · 0:22 · no sound</span><h3 class="h-s">Give the logo room</h3><ol id="steps-clearspace"><li>Measure x: the height of the DEL SOL letters.</li><li>Keep x of empty space on every side.</li><li>Text, photos, and edges stay outside that line.</li><li>Too small for the detail? Switch to a simpler mark like the Interlocking DS.</li></ol></figcaption>
+  </figure>
   <div class="two" style="margin-top:28px">
     <div class="cs"><div class="cs-box"><img src="logos/svg/delsol-wordmark-del-sol-jaguars-full-color.svg" alt="Del Sol Jaguars word mark with clear space zone marked"><span class="cs-x t">x</span><span class="cs-x b">x</span><span class="cs-x l">x</span><span class="cs-x r">x</span></div></div>
     <div class="stack">
@@ -367,6 +407,10 @@ footer .frame{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap
   <div class="meta"><span class="lbl"><b>04</b> Usage Rules</span><span class="r lbl"><span>4 do</span><span>8 don't</span></span></div>
   <h2 class="h-l">Protect the Marks</h2>
   <p class="lead">Proportions, colors, and construction are fixed. If you find yourself dragging a corner handle, changing a fill color, or adding an effect, stop and grab a different file from the library instead.</p>
+  <figure class="clip">
+    <video poster="videos/howto-usage-poster.jpg" muted loop playsinline preload="none" controls aria-label="How-to video: Protect the marks" aria-describedby="steps-usage"><source src="videos/howto-usage.mp4" type="video/mp4"><source src="videos/howto-usage.webm" type="video/webm"></video>
+    <figcaption><span class="lbl"><b>Watch</b> · 0:24 · no sound</span><h3 class="h-s">Protect the marks</h3><ol id="steps-usage"><li>Never stretch or squash. Hold Shift when resizing.</li><li>Never recolor the logo.</li><li>No shadows, glows, or added outlines.</li><li>Don't rotate or tilt it.</li><li>Need a different look? Choose another official file.</li></ol></figcaption>
+  </figure>
   <div class="grid g4" style="margin-top:28px">
     <div class="cell do"><div class="ex"><img src="logos/svg/delsol-primary-logo-full-color.svg" alt=""></div><span class="verdict">✓ Do</span><p>Use the full-color logo on white or light backgrounds whenever color printing is available.</p></div>
     <div class="cell do"><div class="ex" style="background:#FF671F"><img src="logos/svg/delsol-secondary-jaguar-face-black-white.svg" alt=""></div><span class="verdict">✓ Do</span><p>On Del Sol Orange, use the black &amp; white version of an illustrated mark. Its white fills keep it visible.</p></div>
@@ -392,7 +436,7 @@ footer .frame{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap
   <div class="grid g2" style="margin-top:28px">
     <article class="cell">
       <div class="meta" style="margin:0"><span class="lbl"><b>Jaguar Profile</b></span><span class="lbl" style="color:var(--bad)">Retired · October 2026</span></div>
-      <div class="stage" style="background:#F6F0DA"><img src="logos/retired/delsol-jaguar-profile-retired.png" alt="Retired Jaguar Profile logo, stamped RETIRED, do not use" style="padding:0" loading="lazy"></div>
+      <div class="stage" style="background:#fff;aspect-ratio:5/3"><img src="logos/retired/delsol-jaguar-profile-retired.png?v=2" draggable="false" alt="Retired Jaguar Profile logo, faded and covered with a repeating RETIRED, DO NOT USE watermark. Do not use." style="padding:0;object-fit:contain" loading="lazy"></div>
       <p>Side-view jaguar head with a sun in its eye, from the original Brandiose set (v11/8/22). Its files have been removed from this guide and are no longer available to download.</p>
     </article>
     <article class="cell">
@@ -412,6 +456,10 @@ footer .frame{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap
   <div class="meta"><span class="lbl"><b>06</b> Color</span><span class="r lbl"><span>Pantone · CMYK · RGB · HEX</span><span>Click any value to copy</span></span></div>
   <h2 class="h-l">Color Palette</h2>
   <p class="lead">Del Sol Orange leads. Gold is the sunlight accent, Black anchors the outlines, and white keeps everything crisp. Gray tones appear only in the grayscale logo versions.</p>
+  <figure class="clip">
+    <video poster="videos/howto-color-poster.jpg" muted loop playsinline preload="none" controls aria-label="How-to video: Use the colors" aria-describedby="steps-color"><source src="videos/howto-color.mp4" type="video/mp4"><source src="videos/howto-color.webm" type="video/webm"></video>
+    <figcaption><span class="lbl"><b>Watch</b> · 0:26 · no sound</span><h3 class="h-s">Use the colors</h3><ol id="steps-color"><li>Del Sol has three official colors: Orange, Gold, and Black.</li><li>Orange leads. Gold is the accent. Black anchors.</li><li>White text on orange is too hard to read. Use black.</li><li>For text on white, use the darker Orange Shade 40% (#993E13).</li><li>Never set gold on orange, or orange on gold.</li></ol></figcaption>
+  </figure>
   <div class="grid" id="swatches" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:28px"></div>
   <p class="lbl" style="margin:24px 0 8px">Del Sol Orange · shades &amp; tints</p>
   <div class="ramp" id="ramp-orange"></div>
@@ -470,6 +518,10 @@ footer .frame{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap
     <div class="meta"><span class="lbl"><b>09</b> Typography</span><span class="r lbl"><span>Del Sol Italic v1.000</span><span>All caps · numerals · punctuation</span><span>Open Sans for body</span></span></div>
     <h2 class="h-l">Del Sol Italic</h2>
     <p class="lead">Del Sol's own headline typeface. <b>Del Sol Italic</b> is built from the slanted athletic lettering in the DEL SOL and JAGUARS word marks, so headlines, event titles, and player names match the logos. Type in the box below to try it, drag the slider to resize, and pick a color.</p>
+  <figure class="clip">
+    <video poster="videos/howto-type-poster.jpg" muted loop playsinline preload="none" controls aria-label="How-to video: Use the typefaces" aria-describedby="steps-type"><source src="videos/howto-type.mp4" type="video/mp4"><source src="videos/howto-type.webm" type="video/webm"></video>
+    <figcaption><span class="lbl"><b>Watch</b> · 0:26 · no sound</span><h3 class="h-s">Use the typefaces</h3><ol id="steps-type"><li>Use Del Sol Italic for headlines and titles.</li><li>Use Open Sans for everything else.</li><li>It's all caps: lowercase keys type capitals.</li><li>It has no accent marks. Set Spanish in Open Sans.</li><li>Never retype the word mark. Place the logo file.</li></ol></figcaption>
+  </figure>
     <div class="meta" style="margin:22px 0 0"><span></span><a class="btn" href="del-sol-italic-font.zip" download>Download font ↓</a></div>
   </div>
     <div class="tester type-tester" role="group" aria-label="Try the typeface" style="padding-inline:clamp(16px,2vw,24px)">
@@ -551,6 +603,10 @@ footer .frame{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap
   <div class="meta"><span class="lbl"><b>11</b> AI &amp; Flyers</span><span class="r lbl"><span>Artwork only · real logo · real fonts</span></span></div>
   <h2 class="h-l">AI Image Tools</h2>
   <p class="lead">Image generators can't reproduce the Del Sol jaguar exactly. Ask one to "include the Del Sol logo" and it invents a new, slightly wrong jaguar: different spots, missing step details, made-up lettering. Use AI for the artwork only, then add the real logo and text yourself.</p>
+  <figure class="clip">
+    <video poster="videos/howto-ai-poster.jpg" muted loop playsinline preload="none" controls aria-label="How-to video: Make a flyer with AI art" aria-describedby="steps-ai"><source src="videos/howto-ai.mp4" type="video/mp4"><source src="videos/howto-ai.webm" type="video/webm"></video>
+    <figcaption><span class="lbl"><b>Watch</b> · 0:24 · no sound</span><h3 class="h-s">Make a flyer with AI art</h3><ol id="steps-ai"><li>Use AI for the background art only.</li><li>Leave calm, empty space for the logo.</li><li>Place the real logo file from this guide.</li><li>Add the words yourself in Del Sol Italic and Open Sans.</li></ol></figcaption>
+  </figure>
   <ol class="steps grid g4" style="margin-top:28px">
     <li><b>Generate artwork only</b><span>Backgrounds, illustration, or photo-style scenes. No logos, mascots, text, or seals.</span></li>
     <li><b>Leave clear space</b><span>Ask for empty, calm space in a corner or along one edge where the logo will go.</span></li>
@@ -746,6 +802,16 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-copy]');if
   const p=navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject();
   p.then(()=>say('Copied '+t)).catch(()=>{const r=document.createRange();r.selectNodeContents(b);const s=getSelection();s.removeAllRanges();s.addRange(r);say('Press Ctrl/Cmd+C to copy')});});
 
+/* How-to clips: play while on screen, pause when scrolled away; never autoplay for reduced-motion users */
+(()=>{const vids=[...document.querySelectorAll('.clip video')];if(!vids.length)return;
+  const calm=matchMedia('(prefers-reduced-motion: reduce)').matches;const touched=new WeakSet();
+  vids.forEach(v=>{v.addEventListener('pause',()=>{if(!v.dataset.auto)touched.add(v)});v.addEventListener('play',()=>{delete v.dataset.auto})});
+  if(calm||!('IntersectionObserver' in window))return;
+  const io=new IntersectionObserver(es=>es.forEach(e=>{const v=e.target;
+    if(e.isIntersecting&&e.intersectionRatio>=.6){if(!touched.has(v)){v.preload='auto';v.play().catch(()=>{})}}
+    else if(!v.paused){v.dataset.auto='1';v.pause()}}),{threshold:[0,.6]});
+  vids.forEach(v=>io.observe(v));})();
+
 /* Keep the type tester tucked under the sticky bar */
 const setBarH=()=>document.documentElement.style.setProperty('--barh',document.querySelector('.bar').offsetHeight+'px');
 setBarH();addEventListener('resize',setBarH);
@@ -753,7 +819,7 @@ setBarH();addEventListener('resize',setBarH);
 /* Section highlight: top tabs + section links */
 const navLinks=[...document.querySelectorAll('.secnav a')],tabs=[...document.querySelectorAll('.tab')];
 const io=new IntersectionObserver(es=>es.forEach(en=>{if(!en.isIntersecting)return;const id=en.target.id;
-  navLinks.forEach(l=>l.classList.toggle('on',l.getAttribute('href')==='#'+id));
+  navLinks.forEach(l=>{const on=l.getAttribute('href')==='#'+id;l.classList.toggle('on',on);if(on){const n=document.getElementById('secnav');n.scrollLeft=l.offsetLeft-(n.clientWidth-l.offsetWidth)/2;}});
   const grp={logo:'logo',sports:'logo','clear-space':'logo',usage:'usage',retired:'usage',color:'color',apparel:'color',accessibility:'color',type:'type',name:'usage',ai:'usage',ask:'usage'}[id];
   tabs.forEach(t=>t.classList.toggle('on',t.dataset.sec===grp));}),{rootMargin:'-35% 0px -60% 0px'});
 document.querySelectorAll('main section[id]').forEach(s=>io.observe(s));
